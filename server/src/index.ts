@@ -17,7 +17,7 @@ app.use(
 )
 
 app.route('/api', router)
-
+app.get('/', (c) => c.json({ status: 'Hello, World!' }))
 app.get('/health', (c) => c.json({ status: 'ok' }))
 
 app.notFound((c) =>
