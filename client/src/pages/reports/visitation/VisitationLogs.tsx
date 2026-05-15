@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
 import { getVisitationLogs } from '../../../api/visitation-report.api'
 import type { Column } from '../../../components/ui'
 import { Button, Card, FormGroup, Input, Select, Table } from '../../../components/ui'
