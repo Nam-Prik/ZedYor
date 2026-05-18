@@ -30,6 +30,12 @@ const NAV: NavSection[] = [
     path: '/maintenance',
   },
   {
+    key: 'incident',
+    label: 'Incidents',
+    icon: <LockClosedIcon width={18} height={18} />,
+    path: '/incident',
+  },
+  {
     key: 'reports',
     label: 'Reports',
     icon: <BarChartIcon width={18} height={18} />,
@@ -40,6 +46,14 @@ const NAV: NavSection[] = [
           { label: 'Maintainers by Skill', path: '/reports/maintenance/maintainers-by-skill' },
           { label: 'Labor by Cost', path: '/reports/maintenance/labor-by-cost' },
           { label: 'Cost by Location', path: '/reports/maintenance/cost-by-location' },
+        ],
+      },
+      {
+        label: 'Prisoner Incidents',
+        links: [
+          { label: 'Incidents by Officer', path: '/reports/incident/by-officer' },
+          { label: 'Prisoners by Location', path: '/reports/incident/by-location' },
+          { label: 'Top Prisoners by Location', path: '/reports/incident/top-by-location' },
         ],
       },
     ],
