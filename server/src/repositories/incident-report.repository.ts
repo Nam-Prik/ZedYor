@@ -30,7 +30,9 @@ export const incidentReportRepository = {
   },
 
   // Report 2: all prisoners involved in incidents at a specific location
-  async findInvolvedPrisonersByLocation(locationId: number): Promise<InvolvedPrisonerByLocationRow[]> {
+  async findInvolvedPrisonersByLocation(
+    locationId: number
+  ): Promise<InvolvedPrisonerByLocationRow[]> {
     const result = await pool.query<InvolvedPrisonerByLocationRow>(
       `SELECT p.code AS prisoner_code,
               pr.first_name AS prisoner_first_name,

@@ -1,9 +1,11 @@
 import type { FormEvent } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getInvolvedPrisonersByLocation } from '../../../api/incident-report.api'
-import type { Column } from '../../../components/ui'
-import { Badge, Button, Card, FormGroup, Input, Table } from '../../../components/ui'
+import { getPrisonLocations } from '../../../api/prison-location.api'
+import type { Column, LovColumn } from '../../../components/ui'
+import { Badge, Button, Card, FormGroup, LovButton, Table } from '../../../components/ui'
 import type { InvolvedPrisonerByLocation } from '../../../types/dto/incident-report.dto'
+import type { PrisonLocation } from '../../../types/dto/prison-location.dto'
 
 type Row = InvolvedPrisonerByLocation & { _idx: number }
 
@@ -12,6 +14,13 @@ const RISK_VARIANT: Record<string, 'danger' | 'warning' | 'neutral'> = {
   'Monitor closely': 'warning',
   'Standard Protocol': 'neutral',
 }
+
+const LOCATION_LOV_COLUMNS: LovColumn<PrisonLocation>[] = [
+  { key: 'code', label: 'Code', width: '80px' },
+  { key: 'name', label: 'Name' },
+  { key: 'purpose', label: 'Purpose' },
+  { key: 'maxCapacity', label: 'Capacity', width: '90px' },
+]
 
 const COLUMNS: Column<Row>[] = [
   { key: 'prisonerCode', label: 'Code', width: '130px' },
@@ -37,26 +46,32 @@ const COLUMNS: Column<Row>[] = [
 ]
 
 export default function InvolvedPrisonersByLocation() {
-  const [locationId, setLocationId] = useState('')
+  const [locations, setLocations] = useState<PrisonLocation[]>([])
+  const [selected, setSelected] = useState<PrisonLocation | null>(null)
   const [rows, setRows] = useState<Row[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searched, setSearched] = useState(false)
-  const [inputError, setInputError] = useState<string | undefined>(undefined)
+  const [selectError, setSelectError] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    getPrisonLocations()
+      .then(setLocations)
+      .catch(() => {})
+  }, [])
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const parsed = Number(locationId)
-    if (locationId === '' || Number.isNaN(parsed) || !Number.isInteger(parsed) || parsed <= 0) {
-      setInputError('Please enter a valid location ID (positive integer)')
+    if (!selected) {
+      setSelectError('Please select a location')
       return
     }
-    setInputError(undefined)
+    setSelectError(undefined)
     setLoading(true)
     setError(null)
     setSearched(true)
     try {
-      const data = await getInvolvedPrisonersByLocation(parsed)
+      const data = await getInvolvedPrisonersByLocation(selected.id)
       setRows(data.map((item, i) => ({ ...item, _idx: i })))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -65,28 +80,33 @@ export default function InvolvedPrisonersByLocation() {
     }
   }
 
+  const displayValue = selected ? `[${selected.code}] ${selected.name}` : ''
+
   return (
     <>
       <div className="page-header">
         <h1 className="page-header__title">Involved Prisoners by Location</h1>
         <p className="page-header__subtitle">
-          List all prisoners involved in incidents at a specific prison location, including risk assessment.
+          List all prisoners involved in incidents at a specific prison location, including risk
+          assessment.
         </p>
       </div>
 
       <Card title="Filter">
         <form onSubmit={handleSubmit} className="report-filter">
           <div className="report-filter__input">
-            <FormGroup label="Location ID" htmlFor="locationId" required error={inputError}>
-              <Input
-                id="locationId"
-                type="number"
-                min="1"
-                step="1"
-                placeholder="e.g. 10"
-                value={locationId}
-                onChange={(e) => setLocationId(e.target.value)}
-                error={!!inputError}
+            <FormGroup label="Prison Location" required error={selectError}>
+              <LovButton<PrisonLocation>
+                displayValue={displayValue}
+                placeholder="Select location…"
+                modalTitle="Prison Location"
+                columns={LOCATION_LOV_COLUMNS}
+                data={locations}
+                rowKey="id"
+                onSelect={(loc) => {
+                  setSelected(loc)
+                  setSelectError(undefined)
+                }}
               />
             </FormGroup>
           </div>
@@ -109,7 +129,7 @@ export default function InvolvedPrisonersByLocation() {
               data={rows}
               rowKey="_idx"
               loading={loading}
-              emptyMessage={`No prisoners found for location ID ${locationId}`}
+              emptyMessage={`No prisoners found for location "${selected?.name}"`}
             />
           </Card>
         </div>

@@ -25,7 +25,10 @@ export const incidentReportService = {
     startDate: string,
     endDate: string
   ): Promise<TopPrisonerIncident[]> {
-    const rows = await incidentReportRepository.findTopPrisonerIncidentsByLocation(startDate, endDate)
+    const rows = await incidentReportRepository.findTopPrisonerIncidentsByLocation(
+      startDate,
+      endDate
+    )
     return rows.map(toTopPrisonerIncident)
   },
 }

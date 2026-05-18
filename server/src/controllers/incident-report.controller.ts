@@ -11,7 +11,13 @@ export const incidentReportController = {
   async getIncidentsByOfficer(c: Context) {
     const raw = c.req.query('officerId')
     const officerId = Number(raw)
-    if (raw === undefined || raw === '' || Number.isNaN(officerId) || !Number.isInteger(officerId) || officerId <= 0) {
+    if (
+      raw === undefined ||
+      raw === '' ||
+      Number.isNaN(officerId) ||
+      !Number.isInteger(officerId) ||
+      officerId <= 0
+    ) {
       return c.json<ErrorResponse>(
         {
           error: 'Bad Request',
@@ -32,7 +38,13 @@ export const incidentReportController = {
   async getInvolvedPrisonersByLocation(c: Context) {
     const raw = c.req.query('locationId')
     const locationId = Number(raw)
-    if (raw === undefined || raw === '' || Number.isNaN(locationId) || !Number.isInteger(locationId) || locationId <= 0) {
+    if (
+      raw === undefined ||
+      raw === '' ||
+      Number.isNaN(locationId) ||
+      !Number.isInteger(locationId) ||
+      locationId <= 0
+    ) {
       return c.json<ErrorResponse>(
         {
           error: 'Bad Request',
