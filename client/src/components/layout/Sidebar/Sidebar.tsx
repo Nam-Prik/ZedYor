@@ -30,6 +30,12 @@ const NAV: NavSection[] = [
     path: '/maintenance',
   },
   {
+    key: 'incident',
+    label: 'Incidents',
+    icon: <LockClosedIcon width={18} height={18} />,
+    path: '/incident',
+  },
+  {
     key: 'reports',
     label: 'Reports',
     icon: <BarChartIcon width={18} height={18} />,

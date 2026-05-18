@@ -1,11 +1,20 @@
 import type { FormEvent } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getIncidentsByOfficer } from '../../../api/incident-report.api'
-import type { Column } from '../../../components/ui'
-import { Button, Card, FormGroup, Input, Table } from '../../../components/ui'
+import { getOfficerOptions } from '../../../api/officer.api'
+import type { Column, LovColumn } from '../../../components/ui'
+import { Button, Card, FormGroup, LovButton, Table } from '../../../components/ui'
 import type { IncidentByOfficer } from '../../../types/dto/incident-report.dto'
+import type { OfficerOption } from '../../../types/dto/officer.dto'
 
 type Row = IncidentByOfficer & { _idx: number }
+
+const OFFICER_LOV_COLUMNS: LovColumn<OfficerOption>[] = [
+  { key: 'code', label: 'Code', width: '70px' },
+  { key: 'rank', label: 'Rank', width: '150px' },
+  { key: 'firstName', label: 'First Name' },
+  { key: 'lastName', label: 'Last Name' },
+]
 
 const COLUMNS: Column<Row>[] = [
   { key: 'incidentId', label: 'ID', width: '70px' },
@@ -18,40 +27,43 @@ const COLUMNS: Column<Row>[] = [
   { key: 'locationName', label: 'Location' },
   { key: 'description', label: 'Description' },
   { key: 'daysSinceIncident', label: 'Days Ago', width: '100px' },
-  { key: 'prisonerCode', label: 'Prisoner Code', width: '140px', render: (val) => val ?? '—' },
   {
-    key: 'prisonerFirstName',
-    label: 'First Name',
-    render: (val) => val ?? '—',
+    key: 'prisonerCode',
+    label: 'Prisoner Code',
+    width: '140px',
+    render: (val) => String(val ?? '—'),
   },
-  {
-    key: 'prisonerLastName',
-    label: 'Last Name',
-    render: (val) => val ?? '—',
-  },
+  { key: 'prisonerFirstName', label: 'First Name', render: (val) => String(val ?? '—') },
+  { key: 'prisonerLastName', label: 'Last Name', render: (val) => String(val ?? '—') },
 ]
 
 export default function IncidentsByOfficer() {
-  const [officerId, setOfficerId] = useState('')
+  const [officers, setOfficers] = useState<OfficerOption[]>([])
+  const [selected, setSelected] = useState<OfficerOption | null>(null)
   const [rows, setRows] = useState<Row[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searched, setSearched] = useState(false)
-  const [inputError, setInputError] = useState<string | undefined>(undefined)
+  const [selectError, setSelectError] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    getOfficerOptions()
+      .then(setOfficers)
+      .catch(() => {})
+  }, [])
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const parsed = Number(officerId)
-    if (officerId === '' || Number.isNaN(parsed) || !Number.isInteger(parsed) || parsed <= 0) {
-      setInputError('Please enter a valid officer ID (positive integer)')
+    if (!selected) {
+      setSelectError('Please select an officer')
       return
     }
-    setInputError(undefined)
+    setSelectError(undefined)
     setLoading(true)
     setError(null)
     setSearched(true)
     try {
-      const data = await getIncidentsByOfficer(parsed)
+      const data = await getIncidentsByOfficer(selected.id)
       setRows(data.map((item, i) => ({ ...item, _idx: i })))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -59,6 +71,10 @@ export default function IncidentsByOfficer() {
       setLoading(false)
     }
   }
+
+  const displayValue = selected
+    ? `[${selected.code}] ${selected.firstName} ${selected.lastName}`
+    : ''
 
   return (
     <>
@@ -72,16 +88,18 @@ export default function IncidentsByOfficer() {
       <Card title="Filter">
         <form onSubmit={handleSubmit} className="report-filter">
           <div className="report-filter__input">
-            <FormGroup label="Officer ID" htmlFor="officerId" required error={inputError}>
-              <Input
-                id="officerId"
-                type="number"
-                min="1"
-                step="1"
-                placeholder="e.g. 4"
-                value={officerId}
-                onChange={(e) => setOfficerId(e.target.value)}
-                error={!!inputError}
+            <FormGroup label="Reporting Officer" required error={selectError}>
+              <LovButton<OfficerOption>
+                displayValue={displayValue}
+                placeholder="Select officer…"
+                modalTitle="Reporting Officer"
+                columns={OFFICER_LOV_COLUMNS}
+                data={officers}
+                rowKey="id"
+                onSelect={(o) => {
+                  setSelected(o)
+                  setSelectError(undefined)
+                }}
               />
             </FormGroup>
           </div>
@@ -104,7 +122,7 @@ export default function IncidentsByOfficer() {
               data={rows}
               rowKey="_idx"
               loading={loading}
-              emptyMessage={`No incidents found for officer ID ${officerId}`}
+              emptyMessage={`No incidents found for officer "${selected?.firstName} ${selected?.lastName}"`}
             />
           </Card>
         </div>

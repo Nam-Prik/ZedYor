@@ -9,9 +9,14 @@ type Row = TopPrisonerIncident & { _idx: number }
 
 const COLUMNS: Column<Row>[] = [
   { key: 'locationName', label: 'Location' },
-  { key: 'prisonerCode', label: 'Prisoner Code', width: '140px', render: (val) => val ?? '—' },
-  { key: 'prisonerFirstName', label: 'First Name', render: (val) => val ?? '—' },
-  { key: 'prisonerLastName', label: 'Last Name', render: (val) => val ?? '—' },
+  {
+    key: 'prisonerCode',
+    label: 'Prisoner Code',
+    width: '140px',
+    render: (val) => String(val ?? '—'),
+  },
+  { key: 'prisonerFirstName', label: 'First Name', render: (val) => String(val ?? '—') },
+  { key: 'prisonerLastName', label: 'Last Name', render: (val) => String(val ?? '—') },
   {
     key: 'totalActionsTaken',
     label: 'Total Incidents',

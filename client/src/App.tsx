@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router'
 import AppLayout from './components/layout/AppLayout/AppLayout'
+import IncidentForm from './pages/incident/IncidentForm'
+import IncidentList from './pages/incident/IncidentList'
 import MaintenanceForm from './pages/maintenance/MaintenanceForm'
 import MaintenanceList from './pages/maintenance/MaintenanceList'
 import IncidentsByOfficer from './pages/reports/incident/IncidentsByOfficer'
@@ -17,6 +19,9 @@ export default function App() {
         <Route path="/maintenance" element={<MaintenanceList />} />
         <Route path="/maintenance/new" element={<MaintenanceForm />} />
         <Route path="/maintenance/:id" element={<MaintenanceForm />} />
+        <Route path="/incident" element={<IncidentList />} />
+        <Route path="/incident/new" element={<IncidentForm />} />
+        <Route path="/incident/:id" element={<IncidentForm />} />
         <Route path="/reports/maintenance/maintainers-by-skill" element={<MaintainersBySkill />} />
         <Route path="/reports/maintenance/labor-by-cost" element={<LaborByCost />} />
         <Route path="/reports/maintenance/cost-by-location" element={<CostByLocation />} />
