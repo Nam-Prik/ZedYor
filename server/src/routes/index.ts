@@ -8,6 +8,8 @@ import officerRoutes from './officer.routes.js'
 import prisonLocationRoutes from './prison-location.routes.js'
 import prisonerRoutes from './prisoner.routes.js'
 import treatmentReportRoutes from './treatment-report.routes.js'
+import visitationReportRoutes from './visitation-report.routes.js'
+import visitmentRoutes from './visitment.routes.js'
 
 const router = new Hono()
 
@@ -18,6 +20,8 @@ router.route('/officer', officerRoutes)
 router.route('/prisoner', prisonerRoutes)
 router.route('/incident', incidentRoutes)
 router.route('/labor-reports', laborReportRoutes)
+router.route('/visitation-reports', visitationReportRoutes)
+router.route('/visitment', visitmentRoutes)
 router.route('/incident-reports', incidentReportRoutes)
 router.route('/treatment-reports', treatmentReportRoutes)
 
