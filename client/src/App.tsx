@@ -10,6 +10,9 @@ import TopPrisonersByLocation from './pages/reports/incident/TopPrisonersByLocat
 import CostByLocation from './pages/reports/maintenance/CostByLocation'
 import LaborByCost from './pages/reports/maintenance/LaborByCost'
 import MaintainersBySkill from './pages/reports/maintenance/MaintainersBySkill'
+import TreatmentExperience from './pages/reports/treatment/TreatmentExperience'
+import MedicinePrescription from './pages/reports/treatment/MedicinePrescription'
+import NurseWorkload from './pages/reports/treatment/NurseWorkload'
 
 export default function App() {
   return (
@@ -28,6 +31,9 @@ export default function App() {
         <Route path="/reports/incident/by-officer" element={<IncidentsByOfficer />} />
         <Route path="/reports/incident/by-location" element={<InvolvedPrisonersByLocation />} />
         <Route path="/reports/incident/top-by-location" element={<TopPrisonersByLocation />} />
+        <Route path="/reports/treatment/experience" element={<TreatmentExperience />} />
+        <Route path="/reports/treatment/medicine-prescription" element={<MedicinePrescription />} />
+        <Route path="/reports/treatment/nurse-workload" element={<NurseWorkload />} />
       </Route>
     </Routes>
   )

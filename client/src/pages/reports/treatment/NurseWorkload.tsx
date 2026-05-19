@@ -78,7 +78,7 @@ export default function NurseWorkload() {
             data={rows}
             rowKey="_idx"
             loading={loading}
-            rowStyle={(_row, index) => rowStyle(index)}
+            rowStyle={(_: Row, index: number) => rowStyle(index)}
             emptyMessage="No nurse workload data available."
           />
         </Card>
